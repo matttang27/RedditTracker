@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 import discord
@@ -17,6 +18,10 @@ from webapp import keep_alive
 
 keep_alive()
 
+SEARCH = "https://old.reddit.com/search/.rss?q=subreddit%3AAskReddit&restrict_sr=&sort=new&t=all"
+SEARCH2 = "https://old.reddit.com/search/.rss?q=subreddit%3ADiscord_Bots+flair%3A\"Bot+Request+%5BPaid%5D\"&sort=new&restrict_sr=&t=all"
+REPEAT = 10
+
 class RepeatedTimer(object):
   def __init__(self, interval, function, *args, **kwargs):
     self._timer = None
@@ -28,10 +33,10 @@ class RepeatedTimer(object):
     self.next_call = time.time()
     self.start()
 
-  async def _run(self):
+  def _run(self):
     self.is_running = False
     self.start()
-    await self.function(*self.args, **self.kwargs)
+    self.function(*self.args, **self.kwargs)
 
   def start(self):
     if not self.is_running:
@@ -44,18 +49,25 @@ class RepeatedTimer(object):
     self._timer.cancel()
     self.is_running = False
 
-SEARCH = "https://old.reddit.com/search/.rss?q=subreddit%3ADiscord_Bots+flair%3A\"Bot+Request+%5BPaid%5D\"&sort=new&restrict_sr=&t=all"
+
 
 latest = ""
-async def getFeed():
+
+async def sendToMatthew(string):
+  matthew = await client.get_or_fetch_user(576031405037977600)
+  await matthew.send("<@576031405037977600> " + string)
+
+def getFeed():
     global latest
     RedditFeed = feedparser.parse(SEARCH)
     print(datetime.datetime.now())
     print("Number of RSS posts :", len(RedditFeed.entries))
     if (latest != "" and latest.link != RedditFeed.entries[0].link):
       global client
-      matthew = await client.get_or_fetch_user(576031405037977600)
-      await matthew.send("<@576031405037977600> " + RedditFeed.entries[0].link)
+      print("New post!")
+      print(RedditFeed.entries[0].link)
+      asyncio.run(sendToMatthew(RedditFeed.entries[0].link))
+      
     latest = RedditFeed.entries[0]
     
 
@@ -70,8 +82,8 @@ client = discord.Client(intents=intents)
 async def on_ready():
   print(f'We have logged in as {client.user}')
   print("Tracking reddit feed...")
-  await getFeed()
-  rt = RepeatedTimer(60,getFeed)
+  getFeed()
+  rt = RepeatedTimer(REPEAT,getFeed)
 
 @client.event
 async def on_message(message):
