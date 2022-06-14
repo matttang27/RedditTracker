@@ -19,8 +19,8 @@ from webapp import keep_alive
 
 nest_asyncio.apply()
 #constants
-SEARCH = "https://old.reddit.com/search/.rss?q=subreddit%3AAskReddit&restrict_sr=&sort=new&t=all"
-SEARCH2 = "https://old.reddit.com/search/.rss?q=subreddit%3ADiscord_Bots+flair%3A\"Bot+Request+%5BPaid%5D\"&sort=new&restrict_sr=&t=all"
+SEARCH2 = "https://old.reddit.com/search/.rss?q=subreddit%3AAskReddit&restrict_sr=&sort=new&t=all"
+SEARCH = "https://old.reddit.com/search/.rss?q=subreddit%3ADiscord_Bots+flair%3A\"Bot+Request+%5BPaid%5D\"&sort=new&restrict_sr=&t=all"
 REPEAT = 10
 
 
